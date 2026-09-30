@@ -1,0 +1,16 @@
+{
+  "name": "schrodingers-heist",
+  "version": "1.0.0",
+  "description": "Schrödinger's Heist - A quantum-powered stealth puzzle game",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": ["quantum", "game", "stealth", "puzzle"],
+  "author": "",
+  "license": "ISC"
+}
