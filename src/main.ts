@@ -190,7 +190,7 @@ function drawLevelSelect(ctx: CanvasRenderingContext2D) {
   for (let i = 0; i < rooms.length; i++) {
     const x = startX + i * (cardW + 40);
     const y = 150;
-    const unlocked = i === 0 || isChapterComplete(i - 1);
+    const unlocked = debugMode || i === 0 || isChapterComplete(i - 1);
     const alpha = unlocked ? 1.0 : 0.3;
     
     ctx.globalAlpha = alpha;
@@ -690,10 +690,10 @@ function handleLevelSelectInput() {
   if (input.wasPressed('1')) {
     currentRoomIndex = 0;
     startRoom(0);
-  } else if (input.wasPressed('2') && isChapterComplete(0)) {
+  } else if (input.wasPressed('2') && (debugMode || isChapterComplete(0))) {
     currentRoomIndex = 2;
     startRoom(2);
-  } else if (input.wasPressed('3') && isChapterComplete(1)) {
+  } else if (input.wasPressed('3') && (debugMode || isChapterComplete(1))) {
     currentRoomIndex = 3;
     startRoom(3);
   } else if (input.wasPressed('escape')) {
