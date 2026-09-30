@@ -148,6 +148,19 @@ export function updateGameEngine(engine: GameEngine, dt: number): void {
     audioManager.toggleMute();
   }
   
+  // Debug mode keys
+  if (engine.debugMode) {
+    if (input.wasPressed('n')) {
+      // Skip room
+      completeRoom(engine);
+      return;
+    }
+    if (input.wasPressed('g')) {
+      // Grant full coherence
+      engine.coherenceState.value = COHERENCE_MAX;
+    }
+  }
+  
   // Collapse freeze frame
   if (engine.state.collapseFreezeTimer > 0) {
     engine.state.collapseFreezeTimer -= dt;

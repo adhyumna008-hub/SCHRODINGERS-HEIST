@@ -10,6 +10,7 @@ import { GameLoop } from './core/loop';
 import { Renderer } from './render/renderer';
 import { HUDRenderer } from './render/hud';
 import { PostFX } from './render/postfx';
+import { MiniFeedRenderer, drawEdgePing } from './render/minifeed';
 import {
   GameEngine, createGameEngine, updateGameEngine, resumeGame, restartRoom, GameScreen
 } from './game/engine';
@@ -17,6 +18,8 @@ import { getCoherenceFraction, getCoherenceThreshold } from './game/coherence';
 import { getWarningUrgency } from './game/avatar';
 import { getLaserPixelCoords } from './game/doors';
 import { calculateStars, getStarCount, formatTime } from './game/scoring';
+import { tileToPixel } from './game/world';
+import { generateConePolygon } from './game/camera';
 import { createRoom1a } from './game/rooms/room1a';
 import { createRoom1b } from './game/rooms/room1b';
 import { createRoom2 } from './game/rooms/room2';
@@ -30,6 +33,7 @@ const displayCtx = canvas.getContext('2d')!;
 
 const renderer = new Renderer(canvas);
 const hudRenderer = new HUDRenderer();
+const miniFeedRenderer = new MiniFeedRenderer();
 let postfx: PostFX | null = null;
 
 // Try WebGL2 post-processing
@@ -346,6 +350,7 @@ function renderGame(engine: GameEngine) {
   const room = engine.room;
   
   // Draw walls (including outer ring visual)
+  const wallColor = room.accentColor.replace(/[0-9a-f]{2}$/i, '44'); // dim version of accent
   renderer.drawWalls([
     // Outer ring
     { x: 0, y: 0, w: 24, h: 1 },
@@ -353,7 +358,7 @@ function renderGame(engine: GameEngine) {
     { x: 0, y: 1, w: 1, h: 11 },
     { x: 23, y: 1, w: 1, h: 11 },
     ...room.walls,
-  ]);
+  ], room.accentColor);
   
   // Draw exit trigger
   const exit = room.exitTrigger;
@@ -470,6 +475,26 @@ function renderGame(engine: GameEngine) {
     if (!avatar.alive) continue;
     const color = avatar.isControlled ? PLAYER_COLOR : room.accentColor;
     renderer.drawAvatar(avatar.pos.x, avatar.pos.y, avatar.alive, avatar.isControlled, color);
+  }
+  
+  // === MINI-FEED (passive clone camera view) ===
+  if (engine.state.playerState === 'superposed') {
+    const passive = engine.state.avatars.find(a => !a.isControlled && a.alive);
+    if (passive) {
+      miniFeedRenderer.render(ctx, passive.pos, engine.time);
+      
+      // Edge ping: check distance from passive clone to nearest camera cone
+      let nearestConeDist = Infinity;
+      for (let ci = 0; ci < room.cameras.length; ci++) {
+        const cam = room.cameras[ci];
+        const camPos = tileToPixel(cam.pos.x, cam.pos.y);
+        const dx = passive.pos.x - camPos.x;
+        const dy = passive.pos.y - camPos.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        nearestConeDist = Math.min(nearestConeDist, dist);
+      }
+      drawEdgePing(ctx, passive.pos, nearestConeDist, engine.time);
+    }
   }
   
   // === HUD ===
@@ -627,39 +652,37 @@ const gameLoop = new GameLoop(
   },
   // Render
   (_alpha: number) => {
-    displayCtx.save();
+    const sceneCtx = renderer.getSceneCtx();
+    const sceneCanvas = renderer.getSceneCanvas();
     
     if (gameScreen === 'title') {
-      drawTitleScreen(displayCtx);
+      drawTitleScreen(sceneCtx);
     } else if (gameScreen === 'levelSelect') {
-      drawLevelSelect(displayCtx);
+      drawLevelSelect(sceneCtx);
     } else if (gameScreen === 'endScreen') {
-      drawEndScreen(displayCtx);
+      drawEndScreen(sceneCtx);
     } else if (gameScreen === 'playing' && engine) {
       renderGame(engine);
-      
-      // Composite scene to display
-      const sceneCanvas = renderer.getSceneCanvas();
-      
-      if (postfx) {
-        try {
-          postfx.render(sceneCanvas, {
-            coherence: getCoherenceFraction(engine.coherenceState),
-            chromaticAberration: engine.collapseFlashTimer > 0 ? engine.collapseFlashTimer / 0.8 : 0,
-            time: engine.time,
-          });
-          // Draw postfx output to display
-          displayCtx.drawImage(postfx.getCanvas(), 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
-        } catch {
-          // Fallback: draw scene directly
-          displayCtx.drawImage(sceneCanvas, 0, 0);
-        }
-      } else {
-        displayCtx.drawImage(sceneCanvas, 0, 0);
-      }
     }
     
-    displayCtx.restore();
+    // Composite scene canvas to display canvas
+    displayCtx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    const coherence = (gameScreen === 'playing' && engine) ? getCoherenceFraction(engine.coherenceState) : 1;
+    const chromatic = (gameScreen === 'playing' && engine && engine.collapseFlashTimer > 0) 
+      ? engine.collapseFlashTimer / 0.8 : 0;
+    const time = (gameScreen === 'playing' && engine) ? engine.time : titleAnimTime;
+    
+    if (postfx) {
+      try {
+        postfx.render(sceneCanvas, { coherence, chromaticAberration: chromatic, time });
+        displayCtx.drawImage(postfx.getCanvas(), 0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
+      } catch {
+        displayCtx.drawImage(sceneCanvas, 0, 0);
+      }
+    } else {
+      displayCtx.drawImage(sceneCanvas, 0, 0);
+    }
   }
 );
 

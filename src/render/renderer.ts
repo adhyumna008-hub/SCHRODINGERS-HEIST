@@ -61,18 +61,19 @@ export class Renderer {
         this.sceneCtx.globalAlpha = 1.0;
     }
 
-    public drawWalls(walls: Wall[]): void {
-        // Simplified rendering for walls: draw individual wall rects.
+    public drawWalls(walls: Wall[], accentColor: string = '#1a3a5c'): void {
         for (const wall of walls) {
             const px = wall.x * TILE_SIZE;
             const py = wall.y * TILE_SIZE;
             const pw = wall.w * TILE_SIZE;
             const ph = wall.h * TILE_SIZE;
             
-            drawGlowRect(this.sceneCtx, px, py, pw, ph, '#0A2040', 2);
-            // Fill wall body slightly darker
-            this.sceneCtx.fillStyle = '#05070B';
-            this.sceneCtx.fillRect(px, py, pw, ph);
+            // Fill wall body with background to hide grid
+            this.sceneCtx.fillStyle = BG_COLOR;
+            this.sceneCtx.fillRect(px + 1, py + 1, pw - 2, ph - 2);
+            
+            // Glow outline
+            drawGlowRect(this.sceneCtx, px, py, pw, ph, accentColor, 2);
         }
     }
 
