@@ -665,8 +665,8 @@ const gameLoop = new GameLoop(
       renderGame(engine);
     }
     
-    // Composite scene canvas to display canvas
-    displayCtx.clearRect(0, 0, canvas.width, canvas.height);
+    // Composite scene canvas to display canvas  
+    displayCtx.clearRect(0, 0, LOGICAL_WIDTH, LOGICAL_HEIGHT);
     
     const coherence = (gameScreen === 'playing' && engine) ? getCoherenceFraction(engine.coherenceState) : 1;
     const chromatic = (gameScreen === 'playing' && engine && engine.collapseFlashTimer > 0) 
