@@ -58,9 +58,8 @@ const debugMode = window.location.search.includes('debug');
 
 // === RESIZE HANDLER ===
 function resize() {
-  const container = document.getElementById('game-container')!;
-  const w = container.clientWidth;
-  const h = container.clientHeight;
+  const w = window.innerWidth;
+  const h = window.innerHeight;
   const dpr = window.devicePixelRatio || 1;
   
   const scale = Math.min(w / LOGICAL_WIDTH, h / LOGICAL_HEIGHT);
@@ -72,7 +71,9 @@ function resize() {
   canvas.style.width = `${cw}px`;
   canvas.style.height = `${ch}px`;
   
-  displayCtx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
+  // Reset then set transform: scale logical coords to physical canvas
+  displayCtx.setTransform(1, 0, 0, 1, 0, 0);
+  displayCtx.scale(dpr * scale, dpr * scale);
   displayCtx.imageSmoothingEnabled = true;
 }
 

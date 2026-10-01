@@ -5,13 +5,20 @@ export class AudioManager {
 
     private initContext() {
         if (!this.ctx) {
-            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-            this.ctx = new AudioContext();
-            this.masterGain = this.ctx.createGain();
-            this.masterGain.connect(this.ctx.destination);
-            this.updateMuteState();
+            try {
+                const AC = (typeof window !== 'undefined') 
+                    ? (window.AudioContext || (window as any).webkitAudioContext)
+                    : null;
+                if (!AC) return;
+                this.ctx = new AC();
+                this.masterGain = this.ctx.createGain();
+                this.masterGain.connect(this.ctx.destination);
+                this.updateMuteState();
+            } catch {
+                return;
+            }
         }
-        if (this.ctx.state === 'suspended') {
+        if (this.ctx?.state === 'suspended') {
             this.ctx.resume();
         }
     }

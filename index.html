@@ -6,12 +6,23 @@
   <title>Schrödinger's Heist</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
-    #game-container {
-      width: 100%; height: 100%;
-      display: flex; align-items: center; justify-content: center;
+    html, body {
+      width: 100vw; height: 100vh;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Rajdhani', sans-serif;
     }
-    canvas { display: block; image-rendering: auto; }
+    #game-container {
+      width: 100vw; height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: #000;
+    }
+    canvas {
+      display: block;
+      image-rendering: auto;
+    }
+    /* Prevent text selection */
+    body { user-select: none; -webkit-user-select: none; }
   </style>
 </head>
 <body>
