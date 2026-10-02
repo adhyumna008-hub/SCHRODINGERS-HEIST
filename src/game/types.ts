@@ -1,5 +1,6 @@
 // Room data types for Schrödinger's Heist
 
+import type { QuantumState } from './quantum';
 export interface Vec2 {
   x: number;
   y: number;
@@ -65,6 +66,9 @@ export interface Laser {
 }
 
 export interface Panel {
+  quantum?: QuantumState;
+  requiredSequence?: GateType[];
+  solved?: boolean;
   pos: Vec2;        // tile coords
   gateType: GateType;
   linkedIds: string[]; // IDs of linked doors/lasers
@@ -79,12 +83,17 @@ export interface PressurePlate {
 }
 
 export interface Switch {
+  label?: string;
+  requiresPanels?: boolean;
+  requiresSwitches?: number[];
   pos: Vec2;
   linkedIds: string[];
   latched: boolean;
 }
 
 export interface Door {
+  quantum?: QuantumState;
+  observedLock?: boolean;
   id: string;
   pos: Vec2;       // tile top-left
   size: Vec2;      // size in tiles
@@ -108,6 +117,8 @@ export interface BeaconTarget {
 export interface Beacon {
   pos: Vec2;
   active: boolean;
+  origin?: Vec2;
+  flight?: number;
   link: {
     teleporting: boolean;
     teleportTimer: number;
@@ -121,6 +132,15 @@ export interface Checkpoint {
 }
 
 export interface RoomData {
+  storyMemories?: {pos:Vec2;label:string;collected:boolean}[];
+  storyMark?: Vec2;
+  membranes?: Rect[];
+  hints?: string[];
+  objective?: string;
+  requireAllCircuits?: boolean;
+  virusCore?: Vec2;
+  vents?: { from: Vec2; to: Vec2; discovered?: boolean }[];
+  beaconPickup?: Vec2;
   id: string;
   name: string;
   chapter: number;

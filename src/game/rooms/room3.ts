@@ -3,6 +3,9 @@ import { RoomData } from '../types';
 export function createRoom3(): RoomData {
   return {
     id: 'room3',
+    membranes: [{x:16,y:5,w:1,h:2}],
+    beaconPickup: {x:4,y:10},
+    vents: [{from:{x:7,y:8},to:{x:14,y:7}}],
     name: 'TELEPORTATION',
     chapter: 3,
     subtitle: 'Quantum Teleportation',
@@ -16,7 +19,7 @@ export function createRoom3(): RoomData {
     ],
     cameras: [
       {
-        pos: { x: 10, y: 0 },
+        pos: { x: 10, y: 1 },
         baseAngle: 90,
         amplitude: 35,
         period: 5,
@@ -39,7 +42,7 @@ export function createRoom3(): RoomData {
       { id: 'floor2', group: 'L_floor', start: { x: 10, y: 11 }, end: { x: 19, y: 11 }, active: true }
     ],
     panels: [
-      { pos: { x: 6, y: 9 }, gateType: 'H', linkedIds: ['door_alcove'], interactRadius: 1.2, activationCount: 0 }
+      { pos: { x: 6, y: 9 }, gateType: 'H', requiredSequence:['X','H'], linkedIds: ['door_alcove'], interactRadius: 1.2, activationCount: 0 }
     ],
     pressurePlates: [],
     switches: [],
@@ -59,7 +62,7 @@ export function createRoom3(): RoomData {
     exitTrigger: { pos: { x: 21, y: 5 }, size: { x: 1, y: 1 } },
     beaconTarget: { pos: { x: 19, y: 5 } },
     playerStart: { x: 2, y: 10 },
-    labNote: 'Teleportation: a shared entangled pair plus 2 classical bits moves a state; the original is destroyed, the copy appears elsewhere.',
+    labNote: 'Teleportation transfers a state with entanglement, two classical bits and X/Z correction.',
     missionControlLine: 'Destroy yourself here. Rebuild yourself there.',
     parTime: 90
   };

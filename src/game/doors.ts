@@ -1,5 +1,6 @@
 // Door, panel, plate, switch, laser systems
 import { TILE_SIZE, DOOR_GRACE_PERIOD } from '../core/constants';
+import { QuantumState } from './quantum';
 import { Door, Panel, PressurePlate, Switch, Laser, Vec2, DoorState, Rect } from './types';
 
 // ============ DOORS ============
@@ -56,13 +57,17 @@ export function updateDoor(
 
 /** Set a door to superposed state (H-gate) */
 export function superposeDoor(door: Door): void {
-  door.state = 'superposed';
+  if (door.observedLock) { door.quantum = new QuantumState(); door.observedLock = false; }
+  door.quantum ??= new QuantumState(door.state === 'open' ? [0,1] : [1,0]);
+  door.quantum.apply(QuantumState.H);
+  door.state = door.quantum.probability(0) > 1-1e-8 ? 'closed' : door.quantum.probability(1) > 1-1e-8 ? 'open' : 'superposed';
 }
 
 /** Collapse a superposed door to closed */
-export function collapseDoor(door: Door): void {
+export function collapseDoor(door: Door, random = Math.random): void {
   if (door.state === 'superposed') {
-    door.state = 'closed';
+    door.quantum ??= new QuantumState().apply(QuantumState.H);
+    door.state = door.quantum.measure(random) === 0 ? 'closed' : 'open';
   }
 }
 

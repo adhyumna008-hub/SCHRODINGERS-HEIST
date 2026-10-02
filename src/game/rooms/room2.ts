@@ -3,6 +3,7 @@ import { RoomData } from '../types';
 export function createRoom2(): RoomData {
   return {
     id: 'room2',
+    vents: [{from:{x:5,y:2},to:{x:12,y:2}}],
     name: 'GATES',
     chapter: 2,
     subtitle: 'X and H',
@@ -13,7 +14,7 @@ export function createRoom2(): RoomData {
     ],
     cameras: [
       {
-        pos: { x: 12, y: 0 },
+        pos: { x: 12, y: 1 },
         baseAngle: 90,
         amplitude: 30,
         period: 4,
@@ -23,7 +24,7 @@ export function createRoom2(): RoomData {
         lockOn: { active: false, targetPos: { x: 0, y: 0 }, timer: 0 }
       },
       {
-        pos: { x: 14, y: 0 },
+        pos: { x: 14, y: 1 },
         baseAngle: 90,
         amplitude: 5,
         period: 10,
@@ -40,7 +41,7 @@ export function createRoom2(): RoomData {
     ],
     panels: [
       { pos: { x: 3, y: 10 }, gateType: 'X', linkedIds: ['L1'], interactRadius: 1.2, activationCount: 0 },
-      { pos: { x: 14, y: 10 }, gateType: 'H', linkedIds: ['door_h'], interactRadius: 1.2, activationCount: 0 }
+      { pos: { x: 14, y: 10 }, gateType: 'H', requiredSequence:['X','X','H'], linkedIds: ['door_h'], interactRadius: 1.2, activationCount: 0 }
     ],
     pressurePlates: [],
     switches: [],
@@ -59,7 +60,7 @@ export function createRoom2(): RoomData {
     ],
     exitTrigger: { pos: { x: 20, y: 5 }, size: { x: 2, y: 3 } },
     playerStart: { x: 2, y: 4 },
-    labNote: 'X applied twice returns the qubit to its start state. H puts the door in superposition; looking at it collapses it.',
+    labNote: 'X squared and H squared are identity. Observation closes the facility safety lock.',
     missionControlLine: 'Gates change the rules. Learn which ones.',
     parTime: 60
   };

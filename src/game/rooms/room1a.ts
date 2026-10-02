@@ -3,6 +3,7 @@ import { RoomData } from '../types';
 export function createRoom1a(): RoomData {
   return {
     id: 'room1a',
+    vents: [{from:{x:4,y:3},to:{x:10,y:3}}],
     name: 'SUPERPOSITION',
     chapter: 1,
     subtitle: 'Learn to Split',
@@ -35,7 +36,7 @@ export function createRoom1a(): RoomData {
     ],
     exitTrigger: { pos: { x: 22, y: 6 }, size: { x: 1, y: 1 } },
     playerStart: { x: 2, y: 6 },
-    labNote: 'Split: a qubit in superposition explores both paths; measurement collapses it to one.',
+    labNote: 'Superposition carries multiple amplitudes. Independent cats are a puzzle abstraction.',
     missionControlLine: 'Two of you. One exit. Make it work.',
     parTime: 30
   };

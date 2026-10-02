@@ -348,10 +348,10 @@ describe('H-Door', () => {
     expect(door.state).toBe('superposed');
   });
 
-  it('collapse sets superposed door to closed', () => {
+  it('measurement samples closed for a zero outcome', () => {
     const door = createDoor('test', 5, 5, 1, 2, [], 'all', false, 'closed');
     superposeDoor(door);
-    collapseDoor(door);
+    collapseDoor(door, () => 0);
     expect(door.state).toBe('closed');
   });
 

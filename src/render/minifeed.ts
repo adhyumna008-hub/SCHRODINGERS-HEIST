@@ -3,8 +3,8 @@ import { LOGICAL_WIDTH, LOGICAL_HEIGHT, TILE_SIZE } from '../core/constants';
 export class MiniFeedRenderer {
     private offscreenCanvas: HTMLCanvasElement;
     private offscreenCtx: CanvasRenderingContext2D;
-    private width = 256;
-    private height = 144;
+    private width = 112;
+    private height = 72;
 
     constructor() {
         this.offscreenCanvas = document.createElement('canvas');
@@ -52,10 +52,10 @@ export class MiniFeedRenderer {
 
         // 5. Draw 'CAM-B LIVE' label top-left in red
         ctx.fillStyle = '#FF2A3D';
-        ctx.font = '12px monospace';
+        ctx.font = '8px monospace';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'top';
-        ctx.fillText('CAM-B LIVE', 10, 10);
+        ctx.fillText('DECOY / LIVE', 10, 10);
 
         // 6. Blinking 'REC' dot top-right (blinks every 0.5s based on time)
         // 0.5s cycle = 2Hz
@@ -67,7 +67,7 @@ export class MiniFeedRenderer {
         }
 
         // 7. Draw the offscreen result onto the main scene context
-        mainSceneCtx.drawImage(this.offscreenCanvas, LOGICAL_WIDTH - this.width - 20, 20);
+        mainSceneCtx.drawImage(this.offscreenCanvas, 292, 633);
     }
 }
 
@@ -100,7 +100,7 @@ export function drawEdgePing(ctx: CanvasRenderingContext2D, passivePos: { x: num
     const distLeft = passivePos.x;
     const distRight = LOGICAL_WIDTH - passivePos.x;
     const distTop = passivePos.y;
-    const distBottom = LOGICAL_HEIGHT - passivePos.y;
+    const distBottom = 624 - passivePos.y;
 
     const minDist = Math.min(distLeft, distRight, distTop, distBottom);
     let arrowX = passivePos.x;
@@ -117,7 +117,7 @@ export function drawEdgePing(ctx: CanvasRenderingContext2D, passivePos: { x: num
         arrowY = 20;
         rotation = Math.PI / 2; // point down
     } else {
-        arrowY = LOGICAL_HEIGHT - 20;
+        arrowY = 604;
         rotation = -Math.PI / 2; // point up
     }
 

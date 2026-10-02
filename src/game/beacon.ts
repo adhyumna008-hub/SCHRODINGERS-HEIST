@@ -20,7 +20,7 @@ export function createBeacon(pos: Vec2): Beacon {
 
 /**
  * Calculate beacon landing position.
- * Uses aim assist: if beaconTarget is within 35 deg and 12 tiles and path is clear,
+ * Uses aim assist: if beaconTarget is within 35 deg and four tiles and path is clear,
  * lands exactly on that tile. Otherwise lands on last free tile before a wall.
  */
 export function calculateBeaconLanding(

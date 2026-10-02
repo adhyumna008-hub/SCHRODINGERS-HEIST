@@ -138,18 +138,21 @@ export function recallClone(
   const dy = controlledPos.y - clone.pos.y;
   const dist = Math.sqrt(dx * dx + dy * dy);
   
-  if (dist === 0) return true;
+  if (dist < 1) return false;
   
   const moveDist = Math.min(dist, rangePx);
   const ndx = dx / dist;
   const ndy = dy / dist;
   
-  clone.pos.x += ndx * moveDist;
-  clone.pos.y += ndy * moveDist;
-  
-  // Resolve collisions after move
-  resolveCollisions(clone.pos, PLAYER_RADIUS, walls, closedDoorRects);
-  return true;
+  const before = { ...clone.pos };
+  // Sweep in small increments: recall must never jump through solid cover.
+  for (let moved=0;moved<moveDist;moved+=4) {
+    const step=Math.min(4,moveDist-moved),prev={...clone.pos};
+    clone.pos.x+=ndx*step; clone.pos.y+=ndy*step;
+    resolveCollisions(clone.pos, PLAYER_RADIUS, walls, closedDoorRects);
+    if(Math.hypot(clone.pos.x-prev.x,clone.pos.y-prev.y)<step*.5)break;
+  }
+  return Math.hypot(clone.pos.x-before.x,clone.pos.y-before.y)>1;
 }
 
 /** Get distance between two avatars in tiles */

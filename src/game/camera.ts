@@ -10,8 +10,8 @@ const DEG_TO_RAD = Math.PI / 180;
 export function updateCameraAngle(cam: SecurityCamera, time: number): void {
   if (cam.lockOn.active) {
     // During lock-on, point at the lock target
-    const dx = cam.lockOn.targetPos.x - cam.pos.x;
-    const dy = cam.lockOn.targetPos.y - cam.pos.y;
+    const dx = cam.lockOn.targetPos.x - (cam.pos.x + 0.5) * TILE_SIZE;
+    const dy = cam.lockOn.targetPos.y - (cam.pos.y + 0.5) * TILE_SIZE;
     cam.currentAngle = Math.atan2(dy, dx) / DEG_TO_RAD;
     cam.lockOn.timer -= 1 / 60;
     if (cam.lockOn.timer <= 0) {

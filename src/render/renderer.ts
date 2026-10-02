@@ -1,196 +1,38 @@
-import {
-    setGlow,
-    clearGlow,
-    drawGlowLine,
-    drawGlowRect,
-    drawGlowCircle,
-    drawGlowPolygon,
-    drawDashedGlowCircle,
-    drawGlowText
-} from './glow';
-import { LOGICAL_WIDTH, LOGICAL_HEIGHT, TILE_SIZE, BG_COLOR } from '../core/constants';
-
-export interface Wall {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
+import { LOGICAL_WIDTH, LOGICAL_HEIGHT } from '../core/constants';
+export interface Wall { x:number; y:number; w:number; h:number }
+export const CYAN='#6ce8d2', PINK='#d99ae9', WHITE='#eee9d9';
+export function polygon(c:CanvasRenderingContext2D,p:number[][],fill:string,stroke?:string){c.beginPath();p.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=1;c.stroke();}}
+export function label(c:CanvasRenderingContext2D,s:string,x:number,y:number,size=12,color='#8aabb5',align:CanvasTextAlign='left'){c.fillStyle=color;c.font=`${size}px monospace`;c.textAlign=align;c.textBaseline='alphabetic';c.fillText(s,x,y);}
+export function drawCat(c:CanvasRenderingContext2D,x:number,y:number,scale:number,angle:number,t:number,color=CYAN,moving=false,ghost=false){
+ c.save();c.translate(x,y);c.scale(scale,scale);c.fillStyle='#0007';c.beginPath();c.ellipse(0,7,22,13,0,0,Math.PI*2);c.fill();c.rotate(angle);c.globalAlpha=ghost?.7:1;
+ const step=Math.sin(t*(moving?15:2.4))*(moving?4:1);
+ c.strokeStyle=color;c.lineWidth=3;c.beginPath();c.moveTo(-12,0);c.bezierCurveTo(-35,-3,-22,22+step,-39,13+step);c.stroke();
+ c.lineWidth=1;c.strokeStyle='#e6ddc8';c.beginPath();c.moveTo(-12,-2);c.bezierCurveTo(-33,-6,-24,19+step,-38,11+step);c.stroke();
+ for(const [px,py,s] of [[-10,-12,1],[9,-12,-1],[-10,12,-1],[9,12,1]])polygon(c,[[px-6+step*s,py-3],[px+5+step*s,py-3],[px+7+step*s,py+3],[px-5+step*s,py+4]],'#647d84','#142d36');
+ polygon(c,[[-20,-9],[-8,-15],[11,-11],[18,0],[10,12],[-9,14],[-20,6]],ghost?'#384e68':'#b7bcae','#f0e4cc');
+ polygon(c,[[-20,-9],[-8,-15],[-3,0],[-20,6]],'#516976');polygon(c,[[-8,-15],[11,-11],[-3,0]],'#eee5cf');polygon(c,[[-3,0],[10,12],[-9,14]],'#788d91');
+ polygon(c,[[-14,-6],[-2,-9],[5,0],[-3,7],[-14,4]],'#163940',color);c.fillStyle=color;c.fillRect(-11,-2,12,3);
+ polygon(c,[[7,-8],[4,-24],[17,-16],[25,-10],[28,4],[19,14],[10,11],[6,23],[4,7]],'#d9d8c8','#e9e7da');
+ polygon(c,[[6,-21],[14,-16],[9,-12]],color);polygon(c,[[7,10],[15,13],[8,19]],color);polygon(c,[[16,-11],[26,-7],[28,4],[20,9],[12,4]],'#102630');
+ c.shadowColor=color;c.shadowBlur=6;c.fillStyle=color;c.fillRect(20,-6,3,5);c.fillRect(20,2,3,4);c.shadowBlur=0;polygon(c,[[27,-1],[31,1],[27,3]],'#e2b57e');c.restore();
 }
-
 export class Renderer {
-    private sceneCanvas: HTMLCanvasElement;
-    private sceneCtx: CanvasRenderingContext2D;
-
-    constructor(mainCanvas: HTMLCanvasElement) {
-        this.sceneCanvas = document.createElement('canvas');
-        this.sceneCanvas.width = LOGICAL_WIDTH;
-        this.sceneCanvas.height = LOGICAL_HEIGHT;
-        this.sceneCtx = this.sceneCanvas.getContext('2d') as CanvasRenderingContext2D;
-    }
-
-    public getSceneCanvas(): HTMLCanvasElement {
-        return this.sceneCanvas;
-    }
-
-    public getSceneCtx(): CanvasRenderingContext2D {
-        return this.sceneCtx;
-    }
-
-    public clear(): void {
-        this.sceneCtx.clearRect(0, 0, this.sceneCanvas.width, this.sceneCanvas.height);
-    }
-
-    public drawBackground(): void {
-        this.sceneCtx.fillStyle = BG_COLOR;
-        this.sceneCtx.fillRect(0, 0, this.sceneCanvas.width, this.sceneCanvas.height);
-
-        this.sceneCtx.strokeStyle = '#FFFFFF';
-        this.sceneCtx.globalAlpha = 0.03;
-        this.sceneCtx.lineWidth = 1;
-        
-        this.sceneCtx.beginPath();
-        for (let x = 0; x <= this.sceneCanvas.width; x += TILE_SIZE) {
-            this.sceneCtx.moveTo(x, 0);
-            this.sceneCtx.lineTo(x, this.sceneCanvas.height);
-        }
-        for (let y = 0; y <= this.sceneCanvas.height; y += TILE_SIZE) {
-            this.sceneCtx.moveTo(0, y);
-            this.sceneCtx.lineTo(this.sceneCanvas.width, y);
-        }
-        this.sceneCtx.stroke();
-        this.sceneCtx.globalAlpha = 1.0;
-    }
-
-    public drawWalls(walls: Wall[], accentColor: string = '#1a3a5c'): void {
-        for (const wall of walls) {
-            const px = wall.x * TILE_SIZE;
-            const py = wall.y * TILE_SIZE;
-            const pw = wall.w * TILE_SIZE;
-            const ph = wall.h * TILE_SIZE;
-            
-            // Fill wall body with background to hide grid
-            this.sceneCtx.fillStyle = BG_COLOR;
-            this.sceneCtx.fillRect(px + 1, py + 1, pw - 2, ph - 2);
-            
-            // Glow outline
-            drawGlowRect(this.sceneCtx, px, py, pw, ph, accentColor, 2);
-        }
-    }
-
-    public drawAvatar(x: number, y: number, isActive: boolean, isControlled: boolean, color: string): void {
-        const radius = TILE_SIZE / 2 * 0.8;
-        if (isActive) {
-            drawGlowCircle(this.sceneCtx, x, y, radius, color, 3);
-            if (isControlled) {
-                this.sceneCtx.fillStyle = '#F2F6FA';
-                this.sceneCtx.beginPath();
-                this.sceneCtx.arc(x, y, radius * 0.4, 0, Math.PI * 2);
-                this.sceneCtx.fill();
-            }
-            this.sceneCtx.fillStyle = '#FFFFFF';
-            this.sceneCtx.font = '10px Orbitron';
-            this.sceneCtx.textAlign = 'center';
-            this.sceneCtx.fillText('A ACTIVE', x, y - radius - 10);
-        } else {
-            const time = Date.now() / 1000;
-            drawDashedGlowCircle(this.sceneCtx, x, y, radius, color, 8, time * Math.PI);
-            this.sceneCtx.fillStyle = color;
-            this.sceneCtx.globalAlpha = 0.6;
-            this.sceneCtx.font = '10px Orbitron';
-            this.sceneCtx.textAlign = 'center';
-            this.sceneCtx.fillText('B passive clone', x, y - radius - 10);
-            this.sceneCtx.globalAlpha = 1.0;
-        }
-    }
-
-    public drawCameraCone(points: {x: number, y: number}[], alertLevel: number): void {
-        if (points.length < 3) return;
-        this.sceneCtx.beginPath();
-        this.sceneCtx.moveTo(points[0].x, points[0].y);
-        for (let i = 1; i < points.length; i++) {
-            this.sceneCtx.lineTo(points[i].x, points[i].y);
-        }
-        this.sceneCtx.closePath();
-
-        const color = `rgba(255, 0, 0, ${0.15 + alertLevel * 0.05})`;
-        this.sceneCtx.fillStyle = color;
-        this.sceneCtx.fill();
-
-        this.sceneCtx.strokeStyle = '#FF0000';
-        this.sceneCtx.lineWidth = 1;
-        this.sceneCtx.globalAlpha = 0.5;
-        this.sceneCtx.stroke();
-        this.sceneCtx.globalAlpha = 1.0;
-    }
-
-    public drawCameraBody(x: number, y: number, angle: number): void {
-        this.sceneCtx.save();
-        this.sceneCtx.translate(x, y);
-        this.sceneCtx.rotate(angle);
-        
-        drawGlowRect(this.sceneCtx, -10, -10, 20, 20, '#555555', 2);
-        
-        this.sceneCtx.fillStyle = '#FF0000';
-        setGlow(this.sceneCtx, '#FF0000', 8);
-        this.sceneCtx.beginPath();
-        this.sceneCtx.arc(0, 0, 4, 0, Math.PI * 2);
-        this.sceneCtx.fill();
-        clearGlow(this.sceneCtx);
-        
-        this.sceneCtx.restore();
-    }
-
-    public drawLaser(x1: number, y1: number, x2: number, y2: number, active: boolean): void {
-        if (!active) return;
-        const flicker = Math.random() > 0.1 ? 1 : 0.5;
-        drawGlowLine(this.sceneCtx, x1, y1, x2, y2, '#FF0000', 2, 6, flicker);
-    }
-
-    public drawDoor(x: number, y: number, w: number, h: number, state: 'closed' | 'open' | 'superposed', color: string): void {
-        if (state === 'open') return;
-        
-        if (state === 'closed') {
-            drawGlowRect(this.sceneCtx, x, y, w, h, color, 3);
-        } else if (state === 'superposed') {
-            const time = Date.now() / 200;
-            this.sceneCtx.save();
-            this.sceneCtx.setLineDash([5, 5]);
-            this.sceneCtx.lineDashOffset = time % 10;
-            drawGlowRect(this.sceneCtx, x, y, w, h, color, 2);
-            this.sceneCtx.restore();
-        }
-    }
-
-    public drawPanel(x: number, y: number, gateType: 'X' | 'H' | 'switch' | 'plate', active: boolean, color: string): void {
-        const drawColor = active ? color : '#555555';
-        drawGlowRect(this.sceneCtx, x - 15, y - 15, 30, 30, drawColor, 2);
-        
-        let label = '';
-        if (gateType === 'X') label = 'X';
-        else if (gateType === 'H') label = 'H';
-        else if (gateType === 'switch') label = 'S';
-        else if (gateType === 'plate') label = 'P';
-        
-        drawGlowText(this.sceneCtx, label, x, y, drawColor, '14px Orbitron', 'center');
-    }
-
-    public drawBeacon(x: number, y: number): void {
-        const pulse = (Math.sin(Date.now() / 200) + 1) / 2;
-        const r = 4 + pulse * 4;
-        const color = pulse > 0.5 ? '#FF00FF' : '#00FFFF';
-        drawGlowCircle(this.sceneCtx, x, y, r, color, 2);
-    }
-
-    public drawBeaconLink(fromX: number, fromY: number, toX: number, toY: number, pulse: number): void {
-        this.sceneCtx.save();
-        this.sceneCtx.setLineDash([10, 10]);
-        this.sceneCtx.lineDashOffset = -pulse * 20;
-        drawGlowLine(this.sceneCtx, fromX, fromY, toX, toY, '#FF00FF', 2, 6, 0.7);
-        this.sceneCtx.restore();
-    }
-
-    public drawExit(x: number, y: number, w: number, h: number): void {
-        drawGlowRect(this.sceneCtx, x, y, w, h, '#FFB000', 3);
-        drawGlowText(this.sceneCtx, 'EXIT', x + w / 2, y + h / 2, '#FFB000', '16px Orbitron', 'center');
-    }
+ private sceneCanvas:HTMLCanvasElement;private sceneCtx:CanvasRenderingContext2D;public time=0;
+ constructor(_main:HTMLCanvasElement){this.sceneCanvas=document.createElement('canvas');this.sceneCanvas.width=LOGICAL_WIDTH;this.sceneCanvas.height=LOGICAL_HEIGHT;this.sceneCtx=this.sceneCanvas.getContext('2d')!;}
+ getSceneCanvas(){return this.sceneCanvas;}getSceneCtx(){return this.sceneCtx;}clear(){this.sceneCtx.clearRect(0,0,LOGICAL_WIDTH,LOGICAL_HEIGHT);}
+ drawBackground(){const c=this.sceneCtx;c.fillStyle='#101f27';c.fillRect(0,0,1152,720);
+ for(let row=0;row<7;row++)for(let col=0;col<7;col++){const x=col*192-(row%2)*96,y=row*96;c.fillStyle=(row+col)%3===0?'#142630':'#12232c';c.fillRect(x+3,y+3,186,90);c.strokeStyle='#263943';c.beginPath();c.moveTo(x+8,y+90);c.lineTo(x+183,y+90);c.stroke();c.fillStyle='#344550';c.fillRect(x+10,y+10,3,2);c.fillRect(x+176,y+81,3,2);}
+ c.strokeStyle='#29414a';c.lineWidth=1;for(let i=0;i<5;i++){c.beginPath();c.moveTo(48,110+i*96);c.lineTo(230+i*113,110+i*96);c.lineTo(266+i*113,146+i*96);c.lineTo(1094,146+i*96);c.stroke();}
+ label(c,'MILLIKELVIN ARCHIVE / AUTHORIZED CARRIERS ONLY',66,561,10,'#42606a');const g=c.createRadialGradient(540,280,60,540,280,650);g.addColorStop(0,'#74d7c305');g.addColorStop(1,'#01090e55');c.fillStyle=g;c.fillRect(0,0,1152,624);}
+ drawWalls(walls:Wall[],_accent=CYAN){const c=this.sceneCtx;for(const w of walls){const x=w.x*48,y=w.y*48,ww=w.w*48,h=w.h*48;c.fillStyle='#02090dc9';c.fillRect(x+5,y+9,ww,h);c.fillStyle='#233741';c.fillRect(x,y,ww,h);const g=c.createLinearGradient(x,y,x+ww,y+h);g.addColorStop(0,'#324953');g.addColorStop(1,'#12252f');c.fillStyle=g;c.fillRect(x+4,y+4,ww-8,h-8);c.strokeStyle='#58707a';c.strokeRect(x+4,y+4,ww-8,h-8);
+ for(let yy=y+10;yy<y+h-9;yy+=48)for(let xx=x+10;xx<x+ww-9;xx+=48){c.fillStyle='#101e27';c.fillRect(xx,yy,28,28);c.fillStyle='#3d525b';for(let j=0;j<4;j++)c.fillRect(xx+3,yy+4+j*5,22,2);c.fillStyle=Math.floor((xx+yy)/48)%3<1?'#bd9061':'#4c9e98';c.fillRect(xx+22,yy+24,4,2);}c.fillStyle='#799197';c.fillRect(x+7,y+3,Math.min(ww-14,34),2);}}
+ drawAvatar(x:number,y:number,_alive:boolean,controlled:boolean,color:string,angle=0,moving=false){const c=this.sceneCtx;drawCat(c,x,y,.76,angle,this.time,color,moving,!controlled);if(controlled){c.strokeStyle=color;c.lineWidth=1;for(const s of [-1,1]){c.beginPath();c.moveTo(x+s*24,y-7);c.lineTo(x+s*24,y-20);c.lineTo(x+s*13,y-20);c.stroke();}}}
+ drawCameraCone(p:{x:number;y:number}[],alert:number){if(p.length<3)return;const c=this.sceneCtx;c.save();c.beginPath();p.forEach((v,i)=>i?c.lineTo(v.x,v.y):c.moveTo(v.x,v.y));c.closePath();c.fillStyle=`rgba(244,112,97,${.085+alert*.16})`;c.fill();c.strokeStyle=alert>0?'#ff7c65':'#a8615366';c.stroke();c.clip();c.strokeStyle='#ed8c6420';for(let y=0;y<624;y+=16){c.beginPath();c.moveTo(0,y);c.lineTo(1152,y-100);c.stroke();}c.restore();}
+ drawCameraBody(x:number,y:number,angle:number){const c=this.sceneCtx;c.save();c.translate(x,y);polygon(c,[[-15,-12],[12,-15],[18,0],[12,14],[-15,12]],'#1c303b','#79929a');c.rotate(angle);c.fillStyle='#c4bfae';c.fillRect(-10,-8,23,16);c.fillStyle='#536b76';c.fillRect(-9,-7,8,14);c.fillStyle='#17242a';c.fillRect(12,-11,6,22);c.fillStyle='#f49277';c.fillRect(16,-7,3,14);c.restore();}
+ drawLaser(x:number,y:number,xx:number,yy:number,active:boolean){const c=this.sceneCtx;c.save();c.strokeStyle=active?'#f37868':'#3c605d';c.lineWidth=active?2:1;c.setLineDash(active?[]:[3,8]);c.beginPath();c.moveTo(x,y);c.lineTo(xx,yy);c.stroke();if(active){c.strokeStyle='#ff907327';c.lineWidth=10;c.stroke();}for(const [px,py]of [[x,y],[xx,yy]]){c.fillStyle='#273c46';c.fillRect(px-6,py-6,12,12);c.fillStyle=active?'#ffc49d':'#598a7b';c.fillRect(px-2,py-3,4,6);}c.restore();}
+ drawDoor(x:number,y:number,w:number,h:number,state:'closed'|'open'|'superposed',_color:string){const c=this.sceneCtx;c.save();c.fillStyle='#152c35';c.fillRect(x,y,w,h);c.strokeStyle='#5d858b';c.strokeRect(x+3,y+3,w-6,h-6);if(state!=='open'){c.globalAlpha=state==='superposed'?.38:1;for(let yy=y+6;yy<y+h-5;yy+=12){c.fillStyle=state==='superposed'?(Math.floor(yy/12)%2?PINK:CYAN):'#607785';c.fillRect(x+6+Math.sin(this.time*4+yy)*(state==='superposed'?4:0),yy,w-12,7);}}c.globalAlpha=1;label(c,state==='superposed'?'±':state==='open'?'›':'×',x+w/2,y+h/2+5,20,state==='closed'?'#e3b28d':CYAN,'center');c.restore();}
+ drawPanel(x:number,y:number,type:'X'|'H'|'switch'|'plate',active:boolean,_color:string){const c=this.sceneCtx,col=type==='H'?PINK:type==='X'?'#e6bf85':CYAN;polygon(c,[[x-20,y-12],[x-12,y-20],[x+15,y-20],[x+21,y-13],[x+21,y+15],[x+13,y+21],[x-20,y+21]],'#0a1922','#68828c');c.fillStyle=active?'#284b4e':'#1e323e';c.fillRect(x-14,y-13,28,27);c.strokeStyle=col;c.strokeRect(x-14,y-13,28,27);label(c,type==='plate'?'Ⅱ':type==='switch'?'↳':type,x,y+7,21,col,'center');c.fillStyle=active?col:'#4c5c64';c.fillRect(x-8,y+17,16,2);}
+ drawBeacon(x:number,y:number){const c=this.sceneCtx;c.save();c.translate(x,y);c.rotate(this.time*.5);polygon(c,[[0,-16],[14,-8],[14,8],[0,16],[-14,8],[-14,-8]],'#183440',PINK);c.rotate(-this.time*.5);polygon(c,[[0,-9],[7,0],[0,9],[-7,0]],'#d9e5ce',CYAN);c.restore();label(c,'RECEIVER',x,y+29,9,PINK,'center');}
+ drawBeaconLink(x:number,y:number,xx:number,yy:number,pulse:number){const c=this.sceneCtx;c.save();c.strokeStyle='#ba92d47a';c.lineWidth=1;c.beginPath();for(let i=0;i<=60;i++){const t=i/60,px=x+(xx-x)*t,py=y+(yy-y)*t+Math.sin(t*25-pulse)*5;i?c.lineTo(px,py):c.moveTo(px,py);}c.stroke();c.restore();}
+ drawExit(x:number,y:number,w:number,h:number){const c=this.sceneCtx;c.fillStyle='#254c4444';c.fillRect(x,y,w,h);c.strokeStyle='#82cdb0';c.strokeRect(x+5,y+5,w-10,h-10);label(c,'›',x+w/2,y+h/2+6,25,CYAN,'center');}
 }

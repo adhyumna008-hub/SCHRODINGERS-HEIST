@@ -1,0 +1,224 @@
+{
+  "opening": [
+    {
+      "id": "lab",
+      "speaker": "Narrator",
+      "caption": "Every night, Miso kept the world’s coldest computer company.",
+      "title": "02:17 / THE MILLIKELVIN LAB",
+      "duration": 6
+    },
+    {
+      "id": "cat",
+      "speaker": "Narrator",
+      "caption": "Doctor Lin called her an unauthorized lab assistant. Miso preferred supervisor.",
+      "title": "MISO / NIGHT SHIFT SUPERVISOR",
+      "duration": 7
+    },
+    {
+      "id": "paw",
+      "speaker": "Narrator",
+      "caption": "One curious paw opened a return channel that should have stayed closed.",
+      "title": "INSERT / A VERY SMALL MISTAKE",
+      "duration": 7
+    },
+    {
+      "id": "transfer",
+      "speaker": "Narrator",
+      "caption": "The machine caught her pattern. The laboratory vanished around her.",
+      "title": "OVERHEAD / THE TRANSFER",
+      "duration": 6
+    },
+    {
+      "id": "awakening",
+      "speaker": "ADA",
+      "caption": "Miso? You can hear me. One cat, two possibilities. Stay with me.",
+      "title": "ADA / SIGNAL FOUND",
+      "duration": 7
+    },
+    {
+      "id": "null",
+      "speaker": "Null",
+      "caption": "Every memory in this machine belongs to me. Yours will be the last.",
+      "title": "NULL / THE UNINVITED GUEST",
+      "duration": 7
+    },
+    {
+      "id": "mission",
+      "speaker": "ADA",
+      "caption": "Null is destroying us. Restore fifteen sectors and recover our three memories. I can bring you home.",
+      "title": "ADA / THE WAY HOME",
+      "duration": 9
+    },
+    {
+      "id": "heist",
+      "speaker": "Narrator",
+      "caption": "For once, curiosity would have to save the cat.",
+      "title": "THE HEIST / STEAL BACK TOMORROW",
+      "duration": 6
+    }
+  ],
+  "ending": [
+    {
+      "id": "purged",
+      "speaker": "ADA",
+      "caption": "Isolation complete. Null has been erased. Miso, the way home is open.",
+      "title": "NULL / PURGE CONFIRMED",
+      "duration": 8
+    },
+    {
+      "id": "return",
+      "speaker": "Narrator",
+      "caption": "Across the last bridge of light, a familiar pattern returned to the laboratory.",
+      "title": "THE RETURN / ONE CAT",
+      "duration": 8
+    },
+    {
+      "id": "reunion",
+      "speaker": "Lin",
+      "caption": "Miso! You made it. Come here, you impossible little miracle.",
+      "title": "02:18 / BACK IN THE REAL WORLD",
+      "duration": 7
+    },
+    {
+      "id": "celebrate",
+      "speaker": "Lin",
+      "caption": "She saved every one of us! Our best researcher has four paws. Who is a good girl?",
+      "title": "THE LAB / OUR LITTLE HERO",
+      "duration": 10
+    },
+    {
+      "id": "peace",
+      "speaker": "ADA",
+      "caption": "All fifteen sectors are clean. Thank you, Miso. You have earned that nap.",
+      "title": "ADA / EVERYONE ACCOUNTED FOR",
+      "duration": 8
+    },
+    {
+      "id": "anomaly",
+      "speaker": "Narrator",
+      "caption": "Then, in a rack no one was watching, a disconnected monitor woke up.",
+      "title": "02:19 / ONE UNNOTICED SIGNAL",
+      "duration": 7
+    },
+    {
+      "id": "claw",
+      "speaker": "Unknown",
+      "caption": "Null was a lock.",
+      "title": "UNKNOWN / NO SOURCE",
+      "duration": 6
+    },
+    {
+      "id": "eye",
+      "speaker": "Unknown",
+      "caption": "Thank you for opening it.",
+      "title": "UNKNOWN / NO SOURCE",
+      "duration": 6
+    },
+    {
+      "id": "threat",
+      "speaker": "Unknown",
+      "caption": "Sleep well, little hero. Next time, I come through.",
+      "title": "UNKNOWN / NO SOURCE",
+      "duration": 9
+    },
+    {
+      "id": "cut",
+      "speaker": "Silent",
+      "caption": "",
+      "title": "",
+      "duration": 4
+    }
+  ],
+  "levels": [
+    {
+      "number": 1,
+      "speaker": "ADA",
+      "brief": "Miso, your pattern is unstable. Hold both calibration plates so I can keep you here.",
+      "clear": "Two presences. One very real cat. I have your signal."
+    },
+    {
+      "number": 2,
+      "speaker": "ADA",
+      "brief": "Null has taken the observers. Restore the gallery switch and keep a branch on its plate.",
+      "clear": "The laboratory can see your signal again. Doctor Lin is waiting."
+    },
+    {
+      "number": 3,
+      "speaker": "ADA",
+      "brief": "The emergency power is behind these circuits. Flip the laser register, then open the phase shutter.",
+      "clear": "Power restored. Somewhere outside, a monitor lights up with your name."
+    },
+    {
+      "number": 4,
+      "speaker": "ADA",
+      "brief": "Your body cannot cross this membrane. Recover the receiver and send your state into the sealed chamber.",
+      "clear": "The transfer worked. We can build a path back to the laboratory."
+    },
+    {
+      "number": 5,
+      "speaker": "ADA",
+      "brief": "Our first memory is your identity. Recover the amber archive at the upper plate. Hold both cells to release it.",
+      "clear": "Identity recovered. Miso. Laboratory cat. Exceptionally poor respect for keyboards."
+    },
+    {
+      "number": 6,
+      "speaker": "ADA",
+      "brief": "Repair the power register. Without it, the memories cannot survive the journey home.",
+      "clear": "The memory bank is awake. Null can no longer erase what you have saved."
+    },
+    {
+      "number": 7,
+      "speaker": "ADA",
+      "brief": "These gates are scrambled. Cancel the two Hadamards, flip the bit, and restore our clock.",
+      "clear": "The clock is stable. But one timestamp is older than this computer."
+    },
+    {
+      "number": 8,
+      "speaker": "Null",
+      "brief": "You are repairing a door you do not understand. Turn back, little animal.",
+      "clear": "ADA: The watchdog is offline. Null is trying to frighten you. Keep going."
+    },
+    {
+      "number": 9,
+      "speaker": "ADA",
+      "brief": "This relay carries the return signal. Repair the shutter and transfer inside.",
+      "clear": "Doctor Lin can hear me. The laboratory is preparing to receive you."
+    },
+    {
+      "number": 10,
+      "speaker": "ADA",
+      "brief": "The second memory is the laboratory address. Recover the cyan archive inside cold storage.",
+      "clear": "Destination recovered. Home is no longer just a memory."
+    },
+    {
+      "number": 11,
+      "speaker": "ADA",
+      "brief": "Null is sweeping the echo archive. Restore its circuit and cross when the laser moves away.",
+      "clear": "There is a repeating mark in the old logs. No name. No matching process."
+    },
+    {
+      "number": 12,
+      "speaker": "ADA",
+      "brief": "Cut the firewall and repair the receiver. This relay will hold the route open while we reach the core.",
+      "clear": "Return route secured. The unfamiliar signal has gone silent."
+    },
+    {
+      "number": 13,
+      "speaker": "ADA",
+      "brief": "The final memory is our return key. Recover the violet archive beyond the moving firewall.",
+      "clear": "All three memories recovered. Identity, destination, permission to return."
+    },
+    {
+      "number": 14,
+      "speaker": "ADA",
+      "brief": "Null has retreated. Break both laser banks and open the last receiver shutter.",
+      "clear": "The core is exposed. Those strange marks are outside its infection signature. Later. First, get home."
+    },
+    {
+      "number": 15,
+      "speaker": "ADA",
+      "brief": "Repair the three circuits. Transfer inside, isolate the core at the upper switch, then purge it below.",
+      "clear": "Null is gone. Three memories safe. Return channel ready. Come home, Miso."
+    }
+  ]
+}

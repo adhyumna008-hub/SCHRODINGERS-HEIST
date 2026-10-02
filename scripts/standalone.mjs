@@ -1,0 +1,10 @@
+import { readFile, writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+let html = await readFile('dist/index.html', 'utf8');
+const script = html.match(/<script\b[^>]*src="([^"]+)"[^>]*><\/script>/);
+if (!script) throw new Error('Expected one built JavaScript entry');
+const code = await readFile(resolve('dist', script[1]), 'utf8');
+const inline = '<script>' + code.replaceAll('</script', '<\\/script') + '</script>';
+html = html.replace(script[0], '').replace('</body>', () => inline + '</body>');
+await writeFile('dist/index.html', html);
+console.log('Standalone dist/index.html: ' + Math.round(Buffer.byteLength(html)/1024) + ' KB, no external assets.');

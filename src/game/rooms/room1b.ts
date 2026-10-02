@@ -3,6 +3,7 @@ import { RoomData } from '../types';
 export function createRoom1b(): RoomData {
   return {
     id: 'room1b',
+    vents: [{from:{x:4,y:9},to:{x:12,y:9}}],
     name: 'SUPERPOSITION',
     chapter: 1,
     subtitle: 'First Measurement',
@@ -16,7 +17,7 @@ export function createRoom1b(): RoomData {
     ],
     cameras: [
       {
-        pos: { x: 12, y: 0 },
+        pos: { x: 12, y: 1 },
         baseAngle: 90,
         amplitude: 40,
         period: 4,
@@ -49,7 +50,7 @@ export function createRoom1b(): RoomData {
     ],
     exitTrigger: { pos: { x: 22, y: 6 }, size: { x: 1, y: 1 } },
     playerStart: { x: 2, y: 6 },
-    labNote: 'Split: a qubit in superposition explores both paths; measurement collapses it to one.',
+    labNote: 'Measurement selects an outcome. Choosing your survivor is a gameplay simplification.',
     missionControlLine: 'They can see you now. Use that.',
     parTime: 45
   };

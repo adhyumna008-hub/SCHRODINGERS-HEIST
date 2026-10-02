@@ -4,17 +4,20 @@ import { LOGICAL_WIDTH, LOGICAL_HEIGHT } from '../core/constants';
 export class HUDRenderer {
     public drawCoherenceGauge(ctx: CanvasRenderingContext2D, coherence: number, maxCoherence: number): void {
         const percent = Math.max(0, Math.min(1, coherence / maxCoherence));
-        const width = 300;
+        ctx.fillStyle = '#0b1b24';
+        ctx.fillRect(0,624,282,96);
+        ctx.fillRect(415,624,737,96);
+        const width = 250;
         const height = 15;
         const x = 30;
-        const y = LOGICAL_HEIGHT - 45;
+        const y = LOGICAL_HEIGHT - 57;
 
         // Label
         ctx.fillStyle = '#FFFFFF';
-        ctx.font = '12px Exo 2';
+        ctx.font = '10px monospace';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'bottom';
-        ctx.fillText(`COHERENCE ${Math.floor(percent * 100)}% (drains while split)`, x, y - 5);
+        ctx.fillText(`COHERENCE / ${Math.floor(percent * 100)}%`, x, y - 5);
 
         // Bar outline
         ctx.strokeStyle = '#555555';
@@ -38,14 +41,15 @@ export class HUDRenderer {
 
     public drawControlsHint(ctx: CanvasRenderingContext2D): void {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-        ctx.font = '14px Rajdhani';
+        ctx.font = '11px monospace';
         ctx.textAlign = 'right';
         ctx.textBaseline = 'bottom';
-        ctx.fillText('[Space] Split  [Tab] Switch  [Q] Decohere  [R] Recall', LOGICAL_WIDTH - 30, LOGICAL_HEIGHT - 30);
+        ctx.fillText('WASD Move  SPACE Split / Use  TAB Switch  Q Merge  E Beacon  R Restart', LOGICAL_WIDTH - 30, LOGICAL_HEIGHT - 57);
     }
 
     public drawChapterLabel(ctx: CanvasRenderingContext2D, text: string, color: string): void {
-        drawGlowText(ctx, text, 30, 30, color, '24px Orbitron', 'left');
+        ctx.fillStyle='#0b1b24eb'; ctx.fillRect(12,9,380,28);
+        drawGlowText(ctx, text, 24, 24, color, '12px monospace', 'left');
     }
 
     public drawProgressDots(ctx: CanvasRenderingContext2D, current: number, total: number): void {
@@ -117,7 +121,7 @@ export class HUDRenderer {
         
         ctx.fillStyle = '#AAAAAA';
         ctx.font = 'italic 14px Rajdhani';
-        ctx.fillText(`Lab Note: "${labNote}"`, cx, cy + 110);
+        ctx.fillText('SPACE OR CLICK → NEXT SECTOR', cx, cy + 110);
     }
 
     public drawChapterCard(ctx: CanvasRenderingContext2D, chapterNum: number, title: string, subtitle: string, color: string): void {

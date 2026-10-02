@@ -23,7 +23,7 @@ export const BAIT_COHERENCE_COST = 15;
 export const RECALL_COHERENCE_COST = 25;
 export const RECALL_RANGE = 4;
 
-export const BEACON_RANGE = 12;
+export const BEACON_RANGE = 4;
 export const BEACON_AIM_ANGLE = 35;
 export const BEACON_COHERENCE_DRAIN = 8;
 export const TELEPORT_DELAY = 0.4;
