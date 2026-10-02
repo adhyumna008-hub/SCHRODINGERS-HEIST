@@ -31,7 +31,7 @@ function driver(e:ReturnType<typeof createGameEngine>){
     const dx=target.x-avatar().pos.x,dy=target.y-avatar().pos.y;
     held=Math.abs(dx)>Math.abs(dy)?dx>0?'d':'a':dy>0?'s':'w';tick();if(e.screen==='roomClear'){held='';return;}
    }
-   held='';expect(steps,e.room.name+' movement to '+key(tile)).toBeLessThan(100);
+   held='';expect(steps,e.room.name+' movement to '+key(tile)+' '+JSON.stringify({pos:avatar().pos,retries:e.retries})).toBeLessThan(100);
   }
  }
  return {walk,press,tick};
@@ -47,6 +47,40 @@ describe('15-sector campaign',()=>{
   const e=createGameEngine(campaign[4]());e.screen='playing';const d=driver(e);
   d.walk({x:18,y:3});d.press(' ');d.walk({x:18,y:9});expect(e.room.doors[0].state).toBe('open');
   d.walk(e.room.exitTrigger.pos);expect(e.screen).toBe('roomClear');expect(e.retries).toBe(0);
+ });
+ it('solves the first superposition lesson with two controlled branches',()=>{
+  const e=createGameEngine(campaign[0]());e.screen='playing';const d=driver(e);
+  d.walk({x:19,y:2});d.press(' ');d.press('tab');d.walk({x:19,y:10});
+  expect(e.room.pressurePlates.every(p=>p.active)).toBe(true);d.press('tab');d.walk({x:22,y:6});
+  expect(e.screen).toBe('roomClear');expect(e.retries).toBe(0);
+ });
+ it('solves the observation lesson by latching its switch and parking a branch',()=>{
+  const e=createGameEngine(campaign[1]());e.screen='playing';const d=driver(e);
+  d.walk(e.room.switches[0].pos);d.press(' ');expect(e.room.switches[0].latched).toBe(true);
+  d.walk(e.room.pressurePlates[0].pos);d.press(' ');d.press('tab');d.walk(e.room.exitTrigger.pos);
+  expect(e.screen).toBe('roomClear');expect(e.retries).toBe(0);
+ });
+ it('accepts the actual X and H gate sequences in the gate lesson',()=>{
+  const e=createGameEngine(campaign[2]());e.screen='playing';const d=driver(e);
+  d.walk(e.room.panels[0].pos);d.press(' ');d.press('x');d.press('enter');
+  expect(e.room.panels[0].solved).toBe(true);expect(e.room.lasers.every(l=>!l.active)).toBe(true);
+  d.walk(e.room.panels[1].pos);d.press(' ');expect(e.screen).toBe('circuit');
+  d.press('x');d.press('x');d.press('h');d.press('enter');
+  expect(e.room.panels[1].solved).toBe(true);
+  expect(e.room.doors[0].state).not.toBe('closed');
+ });
+ it('solves tutorial sector 4 through its actual pickup, circuit, receiver and exit flow',()=>{
+  const e=createGameEngine(campaign[3]());e.screen='playing';const d=driver(e);
+  d.walk(e.room.beaconPickup!);expect(e.beaconUnlocked).toBe(true);
+  d.walk(e.room.panels[0].pos);d.press(' ');expect(e.screen).toBe('circuit');
+  d.press('x');d.press('h');d.press('enter');expect(e.room.doors[0].state).toBe('superposed');
+  d.walk({x:15,y:5});const sweep=e.room.lasers.find(l=>l.sweeping)!;
+  let ready=0;while(!(sweep.sweeping!.pos<17.2&&sweep.sweeping!.direction===1)&&ready++<500)d.tick();
+  expect(ready).toBeLessThan(500);e.state.avatars[0].facingDir={x:1,y:0};d.press('e');d.tick(20);
+  expect(e.state.beacon?.pos.x).toBeCloseTo((e.room.beaconTarget!.pos.x+.5)*48);
+  d.press('e');d.tick(26);
+  expect(e.state.beacon).toBeNull();expect(e.state.avatars[0].pos.x).toBeGreaterThan(18*48);
+  d.walk({x:19,y:6});d.walk({x:19,y:7});d.walk({x:21,y:7});d.walk({x:21,y:5});expect(e.screen).toBe('roomClear');expect(e.retries).toBe(0);
  });
  for(let index=5;index<15;index++)it('walks, programs and escapes sector '+(index+1),()=>{
   const e=createGameEngine(campaign[index]());e.screen='playing';const d=driver(e);

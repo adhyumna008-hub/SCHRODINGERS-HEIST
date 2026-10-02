@@ -308,9 +308,14 @@ describe('World', () => {
 });
 
 // === BEACON ===
-import { createBeacon, startTeleport, updateTeleport } from '../game/beacon';
+import { calculateBeaconLanding, createBeacon, startTeleport, updateTeleport } from '../game/beacon';
 
 describe('Beacon Teleport', () => {
+  it('rejects a throw that would land back at the cat’s feet against a wall', () => {
+    const landing=calculateBeaconLanding({x:72,y:312},{x:1,y:0},undefined,[{x:2,y:1,w:1,h:11}],[]);
+    expect(landing).toBeNull();
+  });
+
   it('teleport has 0.4s delay', () => {
     const beacon = createBeacon({ x: 100, y: 100 });
     startTeleport(beacon);

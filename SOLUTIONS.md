@@ -54,18 +54,15 @@ Each room can be completed in the described sequence. These are intended solutio
 ## Room 3: Teleportation
 **Par time:** 90s | **Difficulty:** Hard
 
-1. Walk down-left to the H panel at (6,9) — avoid floor lasers at rows 9 and 11
-2. Press **Space** to activate H — alcove door at (16,5-6) enters superposition
-3. Wait for camera C to sweep away from the door area
-4. Face right and press **E** to throw beacon — aim assist lands it on the beacon target at (19,5) through the superposed (passable) door
-5. The beacon is now inside the sealed alcove. Time the sweeping laser inside the alcove
-6. When the sweeping laser is away from tile (19,5), press **E** again to teleport
-7. Watch the "2 classical bits" pulse travel along the link, then after 0.4s you arrive at the beacon
-8. Walk to the exit terminal at (21,5)
+1. Walk onto the receiver at (4,10) to collect it.
+2. At the H terminal at (6,9), press **Space**, enter **X, H**, and press **Enter**. The shutter enters superposition; the membrane still blocks Miso.
+3. Walk to (15,5), just left of the middle gap. Face right and wait until the sweeping laser is on the left side.
+4. Press **E** to throw the receiver to the marked target at (19,5). Wait for it to land, then press **E** again to teleport.
+5. Move down to row 6, walk right beneath the beam, then go up to the exit at (21,5).
 
-**Key insight:** The beacon acts as your entangled pair. Hazards hitting the beacon mirror onto you, so time the teleport when the beacon position is safe.
+**Key insight:** The beacon acts as your entangled pair. The tutorial's slower, shorter sweep leaves a safe route beneath it after arrival. The marker inside the chamber shows the receiver target.
 
-**3-star:** Avoid camera detection entirely. Move quickly to keep Coherence above 40% (beacon drains 8/s).
+**3-star:** Throw only during the safe sweep window and leave the receiver promptly; the active beacon drains coherence at 8/s.
 
 ---
 
@@ -75,4 +72,4 @@ The following adjustments were made to the spec's initial coordinates to ensure 
 
 - **Room 1b:** Camera range 9 tiles ensures the pressure plate at (4,10) is out of range
 - **Room 2:** C2's wide half-angle (40°) ensures it covers the H-door but the bait spot at (11,6) is far enough angularly to pull the locked-on cone away
-- **Room 3:** Sweeping laser speed 2 tiles/s with range 17-21 provides safe windows of ~1s at the beacon target position
+- **Room 3:** The tutorial laser moves at 1 tile/s and ends at row 5, leaving a clear route along row 6 after transfer. Beacon aim assist has half a tile of range tolerance so ordinary movement precision does not make the marked destination unreachable.

@@ -77,6 +77,9 @@ export function calculateBeaconLanding(
   
   // Back off by half a tile from the wall
   const landDist = Math.max(0, hitDist - TILE_SIZE * 0.5);
+  // A blocked throw must fail clearly; silently placing the receiver at the
+  // cat's feet looks like a broken teleport and can trap the player in a loop.
+  if (landDist < TILE_SIZE * 0.25) return null;
   
   return {
     x: originPx.x + dx * landDist,

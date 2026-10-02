@@ -62,13 +62,13 @@ Circuit programmer: select X/H buttons or type X/H, Backspace removes a slot, En
 - **Calibration:** reach the upper-right plate, split there, and guide one cat to the lower plate. The exit remains open for five seconds after a plate is released.
 - **Witness Gallery:** leave a cat on the lower-left plate, reach the upper-right switch, then the exit. Time the camera sweep or use the phase-vent route.
 - **Switchyard:** program X to disable the laser bank. At the phase shutter enter X, X, H. An observer closes the safety lock; bait the observer or time its sweep before re-arming the door.
-- **Sealed Receiver:** collect the receiver near the entrance. Program X, H. Approach the gap, face right and throw the receiver across the membrane. Wait for it to land, then press E again. A moving laser threatens the receiver and the transferred cat. A vent shortens the approach without bypassing the sealed chamber.
+- **Sealed Receiver:** collect the receiver near the entrance. Program X, H. Stand at the marked middle gap, face right, and wait for the sweeping beam to reach the left side. Press E to throw through the open shutter; after it lands, press E again to transfer. Move down to row 6, travel beneath the beam, and go back up to the exit. This tutorial has one hazard at a time; later rooms bring back observer cameras.
 
 The in-game How to play screen contains the complete guide. The original tutorial rooms and Twin Memory have optional split-only vent shortcuts. Sectors 6–8 introduce different circuit sequences and corridor approaches. Sectors 9–15 combine sealed receivers, firewall banks and moving lasers. The final sector requires three repaired circuits and the core purge switch.
 
 ## Awareness, failure and retry
 
-The active cat has a 0.5-second camera warning; the unattended cat has 1.75 seconds. Switching does not shorten a warning already in progress. At expiry, the currently controlled cat survives. If it was measured, its location becomes a checkpoint. If a passive cat was sacrificed, coherence drops by 15 and the camera watches its location for three seconds. A brief exit hint follows baiting.
+The active cat has a 0.5-second camera warning; the unattended cat has 1.75 seconds. Switching does not shorten a warning already in progress. At expiry, the currently controlled cat survives. If it was measured, its location becomes a checkpoint. If a passive cat was sacrificed, coherence drops by 15 and the camera watches its location for three seconds. A contextual objective strip gives the next concrete action in every room, including circuit order, required memories, receiver timing, and camera lockouts. The Hint button gives optional route-by-route help. Brief collapse pauses preserve newly pressed action keys.
 
 Threat pings measure distance to the raycast cone, not the camera body, and play a distinct blip within three tiles. The live synthetic decoy feed and timer rings help track the other cat.
 

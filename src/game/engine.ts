@@ -209,8 +209,11 @@ export function updateGameEngine(engine: GameEngine, dt: number): void {
   
   // Collapse freeze frame
   if (engine.state.collapseFreezeTimer > 0) {
-    engine.state.collapseFreezeTimer -= dt;
-    return;
+    const actionKeys=[' ','tab','q','r','c','e','b','backspace','escape'];
+    const actionRequested=actionKeys.some(key=>input.wasPressed(key));
+    if(!actionRequested){engine.state.collapseFreezeTimer-=dt;return;}
+    // The impact pause is cosmetic; never eat a one-frame player command.
+    engine.state.collapseFreezeTimer=0;
   }
   
   // Flash timers
@@ -604,7 +607,7 @@ function handleBeaconAction(engine: GameEngine, controlled: Avatar, closedDoors:
       engine.state.beacon.origin={...controlled.pos};engine.state.beacon.flight=.3;
       audioManager.playSwitch();
       eventBus.emit('beaconThrown', { pos: landing });
-    }
+    }else notify(engine,'THROW BLOCKED / MOVE CLEAR OF THE WALL AND FACE THE DESTINATION');
   }
 }
 

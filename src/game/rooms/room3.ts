@@ -17,26 +17,17 @@ export function createRoom3(): RoomData {
       { x: 16, y: 4, w: 1, h: 1 },
       { x: 16, y: 7, w: 1, h: 1 }
     ],
-    cameras: [
-      {
-        pos: { x: 10, y: 1 },
-        baseAngle: 90,
-        amplitude: 35,
-        period: 5,
-        halfAngle: 25,
-        range: 10,
-        currentAngle: 90,
-        lockOn: { active: false, targetPos: { x: 0, y: 0 }, timer: 0 }
-      }
-    ],
+    // This is the teleportation tutorial. Keep the moving laser as its single
+    // hazard so the receiver, gate and transfer sequence stays legible.
+    cameras: [],
     lasers: [
       {
         id: 'sweep1',
         group: 'L_sweep',
         start: { x: 17, y: 4 },
-        end: { x: 17, y: 7 },
+        end: { x: 17, y: 5 },
         active: true,
-        sweeping: { axis: 'x', min: 17, max: 21, speed: 2, pos: 17, direction: 1 }
+        sweeping: { axis: 'x', min: 17, max: 21, speed: 1, pos: 17, direction: 1 }
       },
       { id: 'floor1', group: 'L_floor', start: { x: 10, y: 9 }, end: { x: 19, y: 9 }, active: true },
       { id: 'floor2', group: 'L_floor', start: { x: 10, y: 11 }, end: { x: 19, y: 11 }, active: true }
@@ -63,7 +54,7 @@ export function createRoom3(): RoomData {
     beaconTarget: { pos: { x: 19, y: 5 } },
     playerStart: { x: 2, y: 10 },
     labNote: 'Teleportation transfers a state with entanglement, two classical bits and X/Z correction.',
-    missionControlLine: 'Destroy yourself here. Rebuild yourself there.',
+    missionControlLine: 'The membrane blocks Miso; the receiver passes through. E throws it. E again transfers you.',
     parTime: 90
   };
 }

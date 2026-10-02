@@ -113,6 +113,27 @@ function wrap(text:string,x:number,y:number,width:number,size=13,color='#a3b9be'
  if(line)label(ctx,line,x,y,size,color,align);return y;
 }
 function panel(x:number,y:number,w:number,h:number){ctx.fillStyle='#0c222bea';ctx.fillRect(x,y,w,h);ctx.strokeStyle='#45666b';ctx.strokeRect(x,y,w,h);}
+function guidance(e:GameEngine){
+ const room=e.room;
+ if(room.doors.some(d=>d.observedLock))return 'DOOR OBSERVED · BAIT THE CAMERA WITH A BRANCH, THEN RE-RUN THE H CIRCUIT';
+ if(roomIndex===0){const held=room.pressurePlates.filter(p=>p.active).length;if(held===2)return 'BOTH PLATES HELD · REACH THE OPEN EXIT';if(held===1)return 'ONE PLATE HELD · SPLIT, THEN GUIDE THE OTHER CAT TO THE FREE PLATE';return 'GO TO EITHER PLATE AND PRESS SPACE TO SPLIT MISO';}
+ if(roomIndex===1){if(!room.switches[0]?.latched)return 'FIRST · REACH THE UPPER-RIGHT SWITCH AND PRESS SPACE';return room.pressurePlates[0]?.active?'PLATE HELD · TAKE THE CONTROLLED CAT TO THE EXIT':'NEXT · SPACE TO SPLIT, LEAVE A CAT ON THE LOWER-LEFT PLATE';}
+ if(roomIndex===2){const next=room.panels.find(p=>!p.solved);return next?`TERMINAL · SPACE → TYPE ${next.requiredSequence?.join(', ')??next.gateType} → ENTER`:'GATES RESTORED · CROSS THE OPEN SHUTTER AND REACH THE EXIT';}
+ if(room.beaconPickup&&!e.beaconUnlocked)return 'STEP 1 / 5 · WALK ONTO THE RECEIVER PICKUP TO COLLECT IT';
+ if(room.beaconTarget&&e.state.avatars[0].pos.x<(room.beaconTarget.pos.x-.5)*T){
+  const next=room.panels.find(p=>!p.solved);
+  if(next)return `STEP 2 / 5 · TERMINAL · SPACE → TYPE ${next.requiredSequence?.join(', ')??next.gateType} → ENTER`;
+  if(!e.state.beacon){const sweep=room.lasers.find(l=>l.sweeping)?.sweeping;return sweep&&!(sweep.pos<17.2&&sweep.direction===1)?'STEP 3 / 5 · WAIT FOR BEAM AT FAR LEFT, MOVING RIGHT':'STEP 3 / 5 · FACE RIGHT AT THE MIDDLE GAP · PRESS E TO THROW';}
+  if(e.state.beacon.flight)return 'STEP 4 / 5 · RECEIVER IN FLIGHT · WAIT FOR IT TO LAND';
+  if(!e.state.beacon.link.teleporting)return 'STEP 4 / 5 · RECEIVER LANDED · PRESS E AGAIN TO TRANSFER';
+ }
+ const memory=room.storyMemories?.find(m=>!m.collected);if(memory)return `MEMORY REQUIRED · RECOVER ${memory.label} BEFORE EXITING`;
+ const next=room.panels.find(p=>!p.solved);if(next)return `REPAIR CIRCUIT · SPACE AT TERMINAL · ${next.requiredSequence?.join(' → ')??next.gateType} · ENTER`;
+ const sw=room.switches.find(s=>!s.latched);if(sw)return `REACH ${sw.label??'THE SWITCH'} AND PRESS SPACE`;
+ if(room.beaconTarget)return 'STEP 5 / 5 · GO DOWN TO ROW 6, MOVE RIGHT BELOW THE BEAM, THEN UP TO EXIT';
+ if(room.pressurePlates.length&&room.pressurePlates.some(p=>!p.active))return 'HOLD BOTH PRESSURE PLATES AT ONCE · SPACE TO SPLIT';
+ return 'OBJECTIVES COMPLETE · REACH THE MARKED EXIT';
+}
 function gameRender(e:GameEngine){
  renderer.time=e.time;renderer.clear();renderer.drawBackground();
  renderer.drawWalls([{x:0,y:0,w:24,h:1},{x:0,y:12,w:24,h:1},{x:0,y:1,w:1,h:11},{x:23,y:1,w:1,h:11},...e.room.walls],e.room.accentColor);
@@ -121,6 +142,11 @@ function gameRender(e:GameEngine){
  const cp=e.state.checkpoint.pos;ctx.strokeStyle=e.checkpointFlash>0?CYAN:'#476b65';ctx.lineWidth=1;ctx.strokeRect(cp.x-17,cp.y-17,34,34);label(ctx,'CP',cp.x,cp.y+28,8,'#83b8a7','center');
  for(const vent of room.vents??[])for(const p of [vent.from,vent.to]){const x=(p.x+.5)*T,y=(p.y+.5)*T;ctx.fillStyle='#182c38';ctx.fillRect(x-13,y-11,26,22);ctx.strokeStyle=vent.discovered?PINK:'#4f6372';ctx.strokeRect(x-13,y-11,26,22);for(let i=-7;i<9;i+=5){ctx.beginPath();ctx.moveTo(x-9,y+i);ctx.lineTo(x+9,y+i);ctx.stroke();}if(Math.hypot(cat.pos.x-x,cat.pos.y-y)<65)label(ctx,'SPACE / PHASE VENT',x,y-23,9,PINK,'center');}
  const ex=room.exitTrigger;renderer.drawExit(ex.pos.x*T,ex.pos.y*T,ex.size.x*T,ex.size.y*T);
+ if(room.beaconTarget&&e.beaconUnlocked&&room.panels.every(p=>p.solved)){
+  const x=(room.beaconTarget.pos.x+.5)*T,y=(room.beaconTarget.pos.y+.5)*T,pulse=1+Math.sin(e.time*3)*.08;
+  ctx.save();ctx.translate(x,y);ctx.rotate(Math.PI/4);ctx.scale(pulse,pulse);ctx.strokeStyle='#8fe4c6';ctx.lineWidth=2;ctx.strokeRect(-18,-18,36,36);ctx.strokeStyle='#8fe4c677';ctx.strokeRect(-27,-27,54,54);ctx.restore();
+  label(ctx,'TRANSFER DESTINATION',x,y-34,8,'#a4e7d2','center');
+ }
  for(const d of room.doors){renderer.drawDoor(d.pos.x*T,d.pos.y*T,d.size.x*T,d.size.y*T,d.state,room.accentColor);if(d.observedLock)label(ctx,'OBSERVED',d.pos.x*T+d.size.x*T/2,d.pos.y*T-8,8,'#f09c7d','center');}
  for(const m of room.membranes??[]){ctx.strokeStyle='#d09bc77a';ctx.setLineDash([2,6]);ctx.strokeRect(m.x*T,m.y*T,m.w*T,m.h*T);ctx.setLineDash([]);label(ctx,'RECEIVER ONLY',(m.x+.5)*T,(m.y+m.h)*T+13,8,PINK,'center');}
  if(room.virusCore){const v=room.virusCore,clean=room.panels.every(p=>p.solved)&&room.switches.every(p=>p.latched);drawNull(ctx,(v.x+.5)*T,(v.y+.5)*T,.48,e.time,clean);label(ctx,clean?'NULL / PURGED':'NULL / CORE',(v.x+.5)*T,(v.y+2)*T,9,clean?CYAN:'#ec927e','center');if(room.switches[0]?.latched&&!clean)label(ctx,'ISOLATED / PURGE READY',(v.x+.5)*T,(v.y+2.5)*T,8,CYAN,'center');}
@@ -129,7 +155,7 @@ function gameRender(e:GameEngine){
  for(const s of room.switches){renderer.drawPanel((s.pos.x+.5)*T,(s.pos.y+.5)*T,'switch',s.latched,CYAN);if(s.label)label(ctx,s.label,(s.pos.x+.5)*T,(s.pos.y+1)*T+9,9,s.latched?CYAN:'#d8bd90','center');}
  for(const memory of room.storyMemories??[]){if(memory.collected)continue;const x=(memory.pos.x+.5)*T,y=(memory.pos.y+.5)*T;polygon(ctx,[[x-13,y-16],[x+7,y-16],[x+14,y-9],[x+14,y+16],[x-13,y+16]],'#33414a','#e1c187');ctx.fillStyle='#e1c187';ctx.fillRect(x-7,y-9,13,4);ctx.fillRect(x-7,y,17,2);ctx.fillRect(x-7,y+6,11,2);label(ctx,memory.label,x,y-25,9,'#e1c187','center');}
  if(room.storyMark){const x=(room.storyMark.x+.5)*T,y=(room.storyMark.y+.5)*T;ctx.strokeStyle='#836d9277';ctx.lineWidth=2;for(let i=0;i<3;i++){ctx.beginPath();ctx.moveTo(x-12+i*10,y-10);ctx.lineTo(x-16+i*10,y+8);ctx.stroke();}if(Math.hypot(cat.pos.x-x,cat.pos.y-y)<70)label(ctx,'UNINDEXED',x,y+26,8,'#99829f','center');}
- if(room.beaconPickup&&!e.beaconUnlocked){const p=room.beaconPickup;renderer.drawBeacon((p.x+.5)*T,(p.y+.5)*T);label(ctx,'PICK UP',(p.x+.5)*T,(p.y-.1)*T,10,PINK,'center');}
+ if(room.beaconPickup&&!e.beaconUnlocked){const p=room.beaconPickup;renderer.drawBeacon((p.x+.5)*T,(p.y+.5)*T);label(ctx,'WALK HERE / AUTO PICKUP',(p.x+.5)*T,(p.y-.1)*T,8,PINK,'center');}
  for(const laser of room.lasers){const p=getLaserPixelCoords(laser);renderer.drawLaser(p.start.x,p.start.y,p.end.x,p.end.y,laser.active);}
  room.cameras.forEach((camera,i)=>{const danger=Math.max(0,...e.state.avatars.filter(a=>a.warning.sourceCamera===i).map(getWarningUrgency));renderer.drawCameraCone(e.conePolygons[i]??[],danger);renderer.drawCameraBody((camera.pos.x+.5)*T,(camera.pos.y+.5)*T,camera.currentAngle*Math.PI/180);if(camera.lockOn.active)label(ctx,'BAITED '+camera.lockOn.timer.toFixed(1)+'s',(camera.pos.x+.5)*T,(camera.pos.y+1)*T,9,PINK,'center');});
  if(showGhost&&e.bestGhost.length){const g=ghostAt(e.bestGhost,e.state.roomTime);if(g&&Math.abs(g[0]-e.state.roomTime)<.3){ctx.save();ctx.globalAlpha=.2;drawCat(ctx,g[1],g[2],.7,0,e.time,'#cfc5ac');ctx.restore();label(ctx,'BEST',g[1],g[2]-24,8,'#a9a79a','center');}}
@@ -148,6 +174,7 @@ function gameRender(e:GameEngine){
  if(e.gateSolveFxTimer>0&&e.gateSolveFxFrom&&e.gateSolveFxTo){const t=1-e.gateSolveFxTimer/.8,a=e.gateSolveFxFrom,b=e.gateSolveFxTo;ctx.strokeStyle='#9ce0bf';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(a.x+(b.x-a.x)*t,a.y+(b.y-a.y)*t);ctx.stroke();}
  if(e.collapseFlashTimer>0){const p=e.collapseResult?.removedAvatar?.pos;if(p&&!reduced){ctx.save();ctx.globalAlpha=e.collapseFlashTimer/.8;for(let i=0;i<10;i++){const r=(1-e.collapseFlashTimer/.8)*45;ctx.fillStyle=i%2?PINK:CYAN;ctx.fillRect(p.x+Math.sin(i*7)*r,p.y+Math.cos(i*5)*r,7,2);}ctx.restore();}panel(421,270,310,52);label(ctx,e.collapseResult?.type==='branchPruned'?'DECOY SPENT / CAMERA BAITED':e.collapseResult?.type==='measured'?'MEASURED / CHECKPOINT SAVED':'BRANCHES MERGED',576,301,14,'#ecc2a9','center');}
  if(e.teleportFlashTimer>0&&!reduced){ctx.fillStyle=`rgba(135,221,201,${e.teleportFlashTimer*.18})`;ctx.fillRect(0,0,W,624);}
+ panel(200,42,752,34);label(ctx,guidance(e),576,64,11,'#d7e8dc','center');
  hud(e);
  const passive=e.state.avatars.find(a=>!a.isControlled);
  if(passive){feed.render(ctx,passive.pos,e.time);drawEdgePing(ctx,passive.pos,e.threatDistance,e.time);}
